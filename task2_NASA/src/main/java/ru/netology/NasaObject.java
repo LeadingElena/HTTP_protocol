@@ -10,7 +10,7 @@ public class NasaObject {
     private final String media_type;
     private final String service_version;
     private final String title;
-    private static String url = null;
+    private static String url;
 
     public NasaObject(
             @JsonProperty ("copyright") String copyright,

@@ -10,10 +10,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -41,9 +42,11 @@ public class Main {
                 new TypeReference<>() {
                 });
 
-        //nasaObject.forEach(System.out::println);
+        nasaObject.forEach(System.out::println);
 
-        url = NasaObject.getUrl();
+        //url = NasaObject.getUrl();
+        url = "https://apod.nasa.gov/apod/image/2402/Hoag_HubbleBlanco_1080.jpg";
+        request = new HttpGet(url);
         response = httpClient.execute(request);
 
         String namePic = url.substring(url.lastIndexOf('/') + 1, url.length());
@@ -67,13 +70,14 @@ public class Main {
 
         try (FileOutputStream fos = new FileOutputStream(namePic)) {
             byte[] bytes = response.getEntity().getContent().readAllBytes();
-            fos.write(bytes, 0, bytes.length);
+            Reader targetReader = new InputStreamReader(new ByteArrayInputStream(bytes));
+            //byte[] bytes = EntityUtils.toByteArray(response.getEntity());
+            //System.out.println(bytes.length);
+            //fos.write(bytes, 0, bytes.length);
+            fos.write(targetReader.read());
+            System.out.println(namePic.length());
         } catch (IOException e) {
             System.out.println(e.getMessage());
-        }
-
-        if (filePic.canRead()) {
-            System.out.println("Файл может быть прочитан");
         }
 
         response.close();
