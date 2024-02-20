@@ -7,7 +7,7 @@ public class NasaObject {
     private final String date;
     private final String explanation;
     private final String hdurl;
-    private final String media_type;
+    private static String media_type;
     private final String service_version;
     private final String title;
     private static String url;
@@ -32,6 +32,9 @@ public class NasaObject {
         this.url = url;
     }
 
+    public static String getMediaType() {
+        return media_type;
+    }
     public static String getUrl() {
         return url;
     }

@@ -10,11 +10,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 
 import java.io.*;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -43,43 +40,40 @@ public class Main {
                 });
 
         nasaObject.forEach(System.out::println);
+        if (NasaObject.getMediaType() != "video") {
+            url = NasaObject.getUrl();
+            request = new HttpGet(url);
+            response = httpClient.execute(request);
 
-        //url = NasaObject.getUrl();
-        url = "https://apod.nasa.gov/apod/image/2402/Hoag_HubbleBlanco_1080.jpg";
-        request = new HttpGet(url);
-        response = httpClient.execute(request);
+            String namePic = url.substring(url.lastIndexOf('/') + 1, url.length());
 
-        String namePic = url.substring(url.lastIndexOf('/') + 1, url.length());
+            //Файл будет сохранен в создаваемой директории "C:\\PictureNasa"
 
-        //Файл будет сохранен в создаваемой директории "C:\\PictureNasa"
+            File dirPic = new File("C:\\PictureNasa");
+            File filePic = new File("C:\\PictureNasa\\" + namePic);
 
-        File dirPic = new File("C:\\PictureNasa");
-        File filePic = new File("C:\\PictureNasa\\" + namePic);
-
-        if (dirPic.mkdir()) {
-            System.out.println("Директория создана");
-        }
-
-        try {
-            if (filePic.createNewFile()) {
-                System.out.println("Файл создан");
+            if (dirPic.mkdir()) {
+                System.out.println("Директория создана");
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
 
-        try (FileOutputStream fos = new FileOutputStream(namePic)) {
-            byte[] bytes = response.getEntity().getContent().readAllBytes();
-            Reader targetReader = new InputStreamReader(new ByteArrayInputStream(bytes));
-            //byte[] bytes = EntityUtils.toByteArray(response.getEntity());
-            //System.out.println(bytes.length);
-            //fos.write(bytes, 0, bytes.length);
-            fos.write(targetReader.read());
-            System.out.println(namePic.length());
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+            try {
+                if (filePic.createNewFile()) {
+                    System.out.println("Файл создан");
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
 
+            try (FileOutputStream fos = new FileOutputStream(filePic)) {
+                byte[] bytes = response.getEntity().getContent().readAllBytes();
+                //System.out.println(bytes.length);
+                fos.write(bytes, 0, bytes.length);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("Упс! Сегодня картинок нет...");
+        }
         response.close();
         httpClient.close();
     }
